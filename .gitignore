@@ -1,0 +1,7 @@
+runs/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+*.pt
+!best.pt

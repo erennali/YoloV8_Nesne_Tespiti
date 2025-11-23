@@ -1,0 +1,7 @@
+path: /Users/erenalikoca/Desktop/Uyg2/yolo_dataset
+train: train/images
+val: val/images
+
+names:
+  0: airpods
+  1: magic_mouse
