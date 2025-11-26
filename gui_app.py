@@ -5,8 +5,11 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtCore import Qt
 from ultralytics import YOLO
+from PIL import Image, ImageOps
 import cv2
+import numpy as np
 import os
+
 
 class YOLODetectionApp(QMainWindow):
     def __init__(self):
@@ -73,7 +76,7 @@ class YOLODetectionApp(QMainWindow):
         self.results_text = QTextEdit()
         self.results_text.setReadOnly(True)
         self.results_text.setMaximumHeight(120)
-        self.results_text.setStyleSheet("font-size: 13px; background-color: #f5f5f5;")
+        self.results_text.setStyleSheet("font-size: 13px; background-color: #f5f5f5; color: black;")
         results_layout.addWidget(self.results_text)
         results_group.setLayout(results_layout)
         
@@ -87,7 +90,8 @@ class YOLODetectionApp(QMainWindow):
         
     def load_model(self):
         try:
-            model_path = '/Users/erenalikoca/Desktop/Uyg2/best.pt'
+            # Model yolu (Proje klasöründeki models/best.pt)
+            model_path = os.path.join(os.path.dirname(__file__), 'models', 'best.pt')
             if os.path.exists(model_path):
                 self.model = YOLO(model_path)
                 self.results_text.append("Model başarıyla yüklendi.")
@@ -102,7 +106,19 @@ class YOLODetectionApp(QMainWindow):
         
         if file_path:
             self.current_image_path = file_path
-            pixmap = QPixmap(file_path)
+            
+            # Load image with PIL and fix orientation based on EXIF
+            pil_image = Image.open(file_path)
+            pil_image = ImageOps.exif_transpose(pil_image)
+            
+            # Save the corrected image temporarily
+            temp_path = file_path.replace(os.path.splitext(file_path)[1], '_temp.jpg')
+            pil_image.save(temp_path)
+            
+            # Update the current image path to the corrected one
+            self.current_image_path = temp_path
+            
+            pixmap = QPixmap(temp_path)
             self.original_label.setPixmap(
                 pixmap.scaled(self.original_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.tagged_label.clear()
@@ -123,10 +139,13 @@ class YOLODetectionApp(QMainWindow):
             
             self.result_image = result.plot()
             
-            height, width, channel = self.result_image.shape
+            # Convert BGR to RGB
+            result_rgb = cv2.cvtColor(self.result_image, cv2.COLOR_BGR2RGB)
+            
+            height, width, channel = result_rgb.shape
             bytes_per_line = 3 * width
-            q_image = QImage(self.result_image.data, width, height, 
-                           bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+            q_image = QImage(result_rgb.data, width, height, 
+                           bytes_per_line, QImage.Format_RGB888)
             
             pixmap = QPixmap.fromImage(q_image)
             self.tagged_label.setPixmap(

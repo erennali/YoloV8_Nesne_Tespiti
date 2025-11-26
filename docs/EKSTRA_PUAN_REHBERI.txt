@@ -1,0 +1,175 @@
+"""
+EKSTRA PUAN İÇİN YOLOv5 KARŞILAŞTIRMA REHBERİ
+===============================================
+
+Bu rehber, YOLOv5 ile model eğitip YOLOv8 ile karşılaştırma yapmanız için hazırlanmıştır.
+
+ADIM 1: YOLOv5 KURULUMU
+------------------------
+Google Colab'da yeni bir notebook açın ve şu kodları çalıştırın:
+
+```python
+# YOLOv5 repository'sini klonla
+!git clone https://github.com/ultralytics/yolov5
+%cd yolov5
+!pip install -r requirements.txt
+```
+
+ADIM 2: VERİ SETİNİ YÜKLE
+--------------------------
+Google Drive'ınıza veri setinizi yükleyin:
+
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Veri seti yolunu ayarla
+import os
+os.chdir('/content/drive/MyDrive/Uyg2 2')
+```
+
+ADIM 3: YOLOv5 İLE EĞİTİM
+--------------------------
+```python
+# YOLOv5s modelini eğit (YOLOv8n ile benzer boyut)
+!python train.py --img 640 --batch 16 --epochs 50 --data data.yaml --weights yolov5s.pt --name yolov5_airpods_mouse
+```
+
+Eğitim Parametreleri:
+- Model: yolov5s (small - YOLOv8n'e benzer)
+- Epochs: 50 (YOLOv8 ile aynı)
+- Batch: 16
+- Image size: 640x640
+
+ADIM 4: SONUÇLARI KAYDET
+-------------------------
+Eğitim bitince şu dosyaları kaydedin:
+
+```python
+# En iyi modeli kaydet
+!cp runs/train/yolov5_airpods_mouse/weights/best.pt /content/drive/MyDrive/Uyg2\ 2/yolov5_best.pt
+
+# Sonuç grafiklerini kaydet
+!cp runs/train/yolov5_airpods_mouse/results.png /content/drive/MyDrive/Uyg2\ 2/yolov5_results.png
+!cp runs/train/yolov5_airpods_mouse/confusion_matrix.png /content/drive/MyDrive/Uyg2\ 2/yolov5_confusion_matrix.png
+```
+
+ADIM 5: KARŞILAŞTIRMA TABLOSU OLUŞTUR
+--------------------------------------
+Eğitim sonuçlarını karşılaştırın:
+
+YOLOv8 Sonuçları (Mevcut):
+- mAP50: 0.659
+- mAP50-95: 0.632
+- Precision: 0.597
+- Recall: 0.957
+- Model Boyutu: 6.2 MB
+- Parametreler: ~3M
+
+YOLOv5 Sonuçları (Eğitim sonrası doldurun):
+- mAP50: _____ (results.png'den bakın)
+- mAP50-95: _____ (results.png'den bakın)
+- Precision: _____
+- Recall: _____
+- Model Boyutu: _____ MB
+- Parametreler: ~7M
+
+ADIM 6: KARŞILAŞTIRMA NOTEBOOK'U OLUŞTUR
+-----------------------------------------
+Yeni bir notebook oluşturun: model_comparison.ipynb
+
+İçeriği:
+
+```python
+# Model Karşılaştırması: YOLOv8 vs YOLOv5
+
+## 1. Giriş
+Bu notebook'ta aynı veri seti üzerinde YOLOv8 ve YOLOv5 modellerinin 
+performanslarını karşılaştırıyoruz.
+
+## 2. Veri Seti
+- Sınıflar: airpods, magic_mouse
+- Toplam: 203 etiketli görüntü
+- Train: 158, Val: 45
+
+## 3. Eğitim Parametreleri
+Her iki model de aynı parametrelerle eğitildi:
+- Epochs: 50
+- Batch Size: 16
+- Image Size: 640x640
+- Optimizer: AdamW (YOLOv8), SGD (YOLOv5)
+
+## 4. Sonuçlar
+
+### Performans Karşılaştırması
+
+| Metrik | YOLOv8n | YOLOv5s | Fark |
+|--------|---------|---------|------|
+| mAP50 | 0.659 | _____ | _____ |
+| mAP50-95 | 0.632 | _____ | _____ |
+| Precision | 0.597 | _____ | _____ |
+| Recall | 0.957 | _____ | _____ |
+| Model Boyutu | 6.2 MB | _____ MB | _____ |
+| Eğitim Süresi | 11 dakika | _____ | _____ |
+
+## 5. Görsel Karşılaştırma
+
+from IPython.display import Image, display
+import matplotlib.pyplot as plt
+
+# YOLOv8 Sonuçları
+display(Image('runs/detect/yolov8_custom_training/results.png'))
+
+# YOLOv5 Sonuçları
+display(Image('yolov5_results.png'))
+
+## 6. Sonuç ve Değerlendirme
+
+**Hangi model daha iyi?**
+- YOLOv8: [장점을 yazın]
+- YOLOv5: [장점을 yazın]
+
+**Öneriler:**
+- Hız için: _____
+- Doğruluk için: _____
+- Genel kullanım için: _____
+```
+
+ADIM 7: README'YE EKLE
+----------------------
+README.md dosyasına şu bölümü ekleyin:
+
+```markdown
+## 🔬 Model Karşılaştırması (Ekstra Puan)
+
+Bu projede YOLOv8'in yanı sıra YOLOv5 modeli de aynı veri seti üzerinde 
+eğitilmiş ve sonuçlar karşılaştırılmıştır.
+
+### Karşılaştırma Sonuçları
+
+| Model | mAP50 | mAP50-95 | Model Boyutu | Eğitim Süresi |
+|-------|-------|----------|--------------|---------------|
+| YOLOv8n | 0.659 | 0.632 | 6.2 MB | 11 dakika |
+| YOLOv5s | _____ | _____ | _____ MB | _____ |
+
+Detaylı karşılaştırma için: [model_comparison.ipynb](model_comparison.ipynb)
+```
+
+TOPLAM SÜRE TAHMİNİ
+-------------------
+- YOLOv5 kurulum: 5 dakika
+- Eğitim (GPU): 15-20 dakika
+- Karşılaştırma notebook: 10 dakika
+- README güncelleme: 5 dakika
+
+TOPLAM: ~40-50 dakika
+
+İPUÇLARI
+--------
+1. Google Colab'da GPU kullanmayı unutmayın (Runtime → Change runtime type → GPU)
+2. Eğitim sırasında results.png'yi indirip metrik değerlerini not alın
+3. Confusion matrix'i de karşılaştırmaya ekleyin
+4. Hangi modelin hangi durumda daha iyi olduğunu açıklayın
+
+BAŞARILAR! 🎉
+"""

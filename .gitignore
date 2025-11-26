@@ -1,7 +1,21 @@
-runs/
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
 .ipynb_checkpoints/
-.DS_Store
+
+# YOLO
+runs/
+yolov5/
 *.pt
-!best.pt
+!models/*.pt
+
+# OS
+.DS_Store
+
+# Virtual Env
+venv/
+env/
+
+# Local config
+data.yaml.bak
